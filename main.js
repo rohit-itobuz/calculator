@@ -1,128 +1,78 @@
-    // upper output is for showing the expression
-    let outputUpper = document.querySelector('#upper');
-    // lower output is for showing the result
-    let outputLower = document.querySelector('#lower');
+const calc = {
+  symbols: ["+", "-", "&times;", "&div;", "%", "="], // array that contains the symbols
+  memory: [], // an array that will store the numbers and symbols entered by the user.
+  screenMemory: "", // string that represents the current value displayed on the calculator screen.
 
-    // function to get number input
-    function pressNum(e) {
-      if (outputLower.innerHTML === '0') {
-        outputLower.innerHTML = e.innerHTML;
-      } else {
-        outputLower.innerHTML += e.innerHTML;
+  key: function (numb) {
+      document.querySelector(".screen").innerHTML += numb;
+      this.screenMemory += "" + numb;
+  },
+  keySymbols: function (symbol) {
+      document.querySelector(".screen").innerHTML += symbol;
+      this.memory.push(this.screenMemory);
+      this.memory.push(symbol);
+      this.screenMemory = ""; // reset screen memory to empty string
+  },
+  clearAll: function () {
+      this.memory = [];
+      this.screenMemory = "";
+      document.querySelector(".screen").innerHTML = "";
+  },
+  deleteLast: function () {
+      this.screenMemory = this.screenMemory.slice(0, -1);
+      const screen = document.querySelector(".screen");
+      screen.innerHTML = screen.innerHTML.slice(0, -1);
+  },
+  addDecimal: function () {
+      if (!this.screenMemory.includes(".")) {
+          document.querySelector(".screen").innerHTML += ".";
+          this.screenMemory += ".";
       }
-    }
+  },
+  toggleSign: function () {
+      this.screenMemory = -this.screenMemory;
+      const screen = document.querySelector('.screen');
+      screen.innerHTML = this.screenMemory;
+  },
 
-    // clear all
-    function pressAllClear() {
-      outputUpper.innerHTML = '';
-      outputLower.innerHTML = '0';
-    }
+  result: function () {
+      this.memory.push(this.screenMemory);
 
-    // clear one
-    function pressClear() {
-      outputLower.innerHTML = outputLower.innerHTML.slice(0, -1);
-    }
-
-    // calculate button
-    function pressEqual() {
-      let exp = outputLower.innerHTML;
-      outputUpper.innerHTML = exp;
-      exp = exp.replace(/×/g, '*').replace(/÷/g, '/');
-      let result;
-      try {
-        result = eval(exp);
-        // if decimal number more than 4 decimal places
-        if (result.toString().indexOf('.') !== -1) {
-          result = result.toFixed(4);
-        }
-      } catch (e) {
-        result = 'Error';
+      for (let i = 0; i < this.memory.length; i++) {
+          if (this.memory[i] === this.symbols[0]) {
+              let res = Number(this.memory[i - 1]) + Number(this.memory[i + 1]);
+              res = res.toFixed(3);
+              document.querySelector(".screen").innerHTML = res;
+              this.screenMemory = res; // keep track of the current input on the calculator screen.
+              this.memory.push(res); // keep track of the calculated value for future operations if needed.
+          } else if (this.memory[i] === this.symbols[1]) {
+              let res = Number(this.memory[i - 1]) - Number(this.memory[i + 1]);
+              res = res.toFixed(3);
+              document.querySelector(".screen").innerHTML = res;
+              this.screenMemory = res;
+              this.memory.push(res);
+          } else if (this.memory[i] === this.symbols[2]) {
+              let res = Number(this.memory[i - 1]) * Number(this.memory[i + 1]);
+              res = res.toFixed(3);
+              document.querySelector(".screen").innerHTML = res;
+              this.screenMemory = res;
+              this.memory.push(res);
+          } else if (this.memory[i] === this.symbols[3]) {
+              let res = Number(this.memory[i - 1]) / Number(this.memory[i + 1]);
+              res = res.toFixed(3);
+              document.querySelector(".screen").innerHTML = res;
+              this.screenMemory = res;
+              this.memory.push(res);
+          }
+          else if (this.memory[i] === this.symbols[4]) {
+              let res = Number(this.memory[i - 1]) % Number(this.memory[i + 1]);
+              res = res.toFixed(3);
+              document.querySelector(".screen").innerHTML = res;
+              this.screenMemory = res;
+              this.memory.push(res);
+          }
       }
-      outputLower.innerHTML = result;
-    }
+  },
+};
 
-    function pressOperator(e) {
-      // check last operator
-      let lastOperator = outputLower.innerHTML.slice(-1);
-      if (lastOperator.includes('+', '-', '×', '÷')) {
-        output.innerHTML = outputLower.innerHTML.slice(0, -1) + e.innerHTML;
-      } else {
-        outputLower.innerHTML += e.innerHTML;
-      }
-    }
 
-    function pressDot() {
-      outputLower.innerHTML += '.';
-    }
-
-    function pressBracket(e) {
-      outputLower.innerHTML += e.innerHTML;
-    }
-
-    // attach keyboard event
-    document.addEventListener('keydown', function (e) {
-      switch (e.key) {
-        case '0':
-          pressNum(document.querySelector('button:nth-child(2)'));
-          break;
-        case '1':
-          pressNum(document.querySelector('button:nth-child(5)'));
-          break;
-        case '2':
-          pressNum(document.querySelector('button:nth-child(6)'));
-          break;
-        case '3':
-          pressNum(document.querySelector('button:nth-child(7)'));
-          break;
-        case '4':
-          pressNum(document.querySelector('button:nth-child(9)'));
-          break;
-        case '5':
-          pressNum(document.querySelector('button:nth-child(10)'));
-          break;
-        case '6':
-          pressNum(document.querySelector('button:nth-child(11)'));
-          break;
-        case '7':
-          pressNum(document.querySelector('button:nth-child(13)'));
-          break;
-        case '8':
-          pressNum(document.querySelector('button:nth-child(14)'));
-          break;
-        case '9':
-          pressNum(document.querySelector('button:nth-child(15)'));
-          break;
-        case '+':
-          pressOperator(document.querySelector('button:nth-child(4)'));
-          break;
-        case '-':
-          pressOperator(document.querySelector('button:nth-child(8)'));
-          break;
-        case '*':
-          pressOperator(document.querySelector('button:nth-child(12)'));
-          break;
-        case '/':
-          pressOperator(document.querySelector('button:nth-child(16)'));
-          break;
-        case '.':
-          pressDot();
-          break;
-        case '(':
-          pressBracket(document.querySelector('button:nth-child(18)'));
-          break;
-        case ')':
-          pressBracket(document.querySelector('button:nth-child(19)'));
-          break;
-        case 'Enter':
-          // prevent default action
-          e.preventDefault();
-          pressEqual();
-          break;
-        case 'Backspace':
-          pressClear();
-          break;
-        case 'Escape':
-          pressAllClear();
-          break;
-      }
-    });
