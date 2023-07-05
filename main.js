@@ -94,7 +94,7 @@ const calc = {
         this.screenMemory = res;
         this.memory.push(res);
       } else if (this.memory[i] === this.symbols[4]) {
-        let res = Number(this.memory[i - 1]) % Number(this.memory[i + 1]);
+        let res = Number(this.memory[i - 1]) / 100;
         if (res != res.toFixed(2)) {
           const round = res.toFixed(2);
           res = round;
